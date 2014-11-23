@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <style>
+    .grey {
+      color: #A8A8A8;
+    }
+    .dark-grey {
+      color: #282828;
+    }
+  </style>
+  <div>
+    {% for user in users %}
+      <hr>
+    {% endfor %}
+  </div>
+{% endblock %}
