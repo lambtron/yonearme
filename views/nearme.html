@@ -11,6 +11,9 @@
   </style>
   <div>
     {% for user in users %}
+      <a href="https://www.justyo.co/{{ user.username }}">{{ user.username }}</a><br>
+      {{ user.distance }}<br>
+      {{ user.lastSeenFromNow }}<br>
       <hr>
     {% endfor %}
   </div>

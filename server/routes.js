@@ -42,17 +42,8 @@ Routes.getYo = function *getYo() {
  */
 
 Routes.showNearMe = function *showNearMe() {
-  var users = [];
-  var query = this.request.query;
-  for (var prop in query) {
-    var i = prop.charAt(prop.length - 1);
-    var p = prop.slice(0, -1);
-    var user = users[i];
-    if (!user)
-      var user = {};
-    user[p] = query[prop];
-    users[i] = user;
-  }
+  var users = objectToArray(this.request.query);
+  // TODO: order users by .lastSeenFromNow
   if (users.length === 0) return this.body = yield render('404');
   this.body = yield render('nearme', { users: users });
 };
@@ -62,3 +53,25 @@ Routes.showNearMe = function *showNearMe() {
  */
 
 module.exports = Routes;
+
+/**
+ * Private function to turn object to array.
+ *
+ * @param {Object} object
+ *
+ * @return {Array}
+ */
+
+function objectToArray(object) {
+  var array = [];
+  for (var prop in object) {
+    var i = prop.charAt(prop.length - 1);
+    var p = prop.slice(0, -1);
+    var element = array[i];
+    if (!element)
+      var element = {};
+    element[p] = query[prop];
+    array[i] = element;
+  }
+  return array;
+}
