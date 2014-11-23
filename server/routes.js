@@ -3,8 +3,8 @@
  * Module dependencies.
  */
 
-var parse = require('co-body');
 var render = require('../lib/render');
+var NearMe = require('./nearme');
 var Yo = require('../lib/yo');
 
 /**
@@ -22,24 +22,26 @@ Routes.index = function *index() {
 };
 
 /**
- * Get `yo`.
+ * Get `yo` from user.
  */
 
 Routes.getYo = function *getYo() {
-  var username = this.request.query.username;
   var location = this.request.query.location;
-  var lat = location.substring(0, location.indexOf(';'));
-  var lng = location.substring(location.indexOf(';') + 1);
-
-  Yo.yo_link(username, link.data.url);
-  this.body = 'OK';
+  var user = {
+    username: this.request.query.username,
+    lat: location.substring(0, location.indexOf(';')),
+    lng: location.substring(location.indexOf(';') + 1),
+    lastSeenAt: new Date()
+  };
+  var link = yield NearMe.get(user);
+  this.body = yield Yo.yo_link(username, link);
 };
 
 /**
- * Show users nearby.
+ * Show `users` nearby.
  */
 
-Routes.showNearby = function *showNearby() {
+Routes.showNearMe = function *showNearMe() {
   var users = [];
   var query = this.request.query;
   for (var prop in query) {
@@ -52,7 +54,7 @@ Routes.showNearby = function *showNearby() {
     users[i] = user;
   }
   if (users.length === 0) return this.body = yield render('404');
-  this.body = yield render('users', { users: users });
+  this.body = yield render('nearme', { users: users });
 };
 
 /**
