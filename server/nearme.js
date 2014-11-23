@@ -23,17 +23,20 @@ var NearMe = {};
 
 NearMe.get = function *get(user) {
   var existingUser = yield Users.findOne({ username: username });
+  var searchRadius = 5; // in km
   if (!existingUser) {
     yield Users.insert(user);
   } else {
-    // Double radius.
+    searchRadius *= 2;
     yield Users.update({ username: username }, user);
   }
-
-
-  var users = yield Users.find();
-
-
+  var geoQuery = {
+    loc: {
+      '$near': [ parseInt(user.lng), parseInt(user.lat) ],
+      $maxDistance: searchRadius/111.2
+    }
+  };
+  var users = yield Users.find(geoQuery);
   users = users.map(function(u) {
     var origin = [user.lat + ',' + user.lng];
     var destination = [u.lat + ',' + u.lng];
