@@ -6,7 +6,7 @@
 var Distance = require('../lib/distance');
 var urlencode = require('urlencode');
 var Bitly = require('../lib/bitly');
-var Users = require('../lib/user');
+var Users = require('../lib/users');
 var Moment = require('moment');
 
 /**
@@ -22,31 +22,31 @@ var NearMe = {};
  */
 
 NearMe.get = function *get(user) {
-  var existingUser = yield Users.findOne({ username: username });
+  var existingUser = yield Users.findOne({ username: user.username });
   var searchRadius = 5; // in km
   var domain = 'http://yonearme.herokuapp.com/nearme/';
   if (!existingUser) {
     yield Users.insert(user);
   } else {
-    if (moment(existingUser.lastSeenAt).add(1, 'minute').isAfter(moment()))
+    if (Moment(existingUser.lastSeenAt).add(1, 'minute').isAfter(Moment()))
       searchRadius *= 2;
-    yield Users.update({ username: username }, user);
+    yield Users.update({ username: user.username }, user);
   }
   var geoQuery = {
-    loc: {
-      '$near': [ parseInt(user.lng), parseInt(user.lat) ],
+    location: {
+      $near: [ parseInt(user.lng), parseInt(user.lat) ],
       $maxDistance: searchRadius/111.2
     }
   };
   var users = yield Users.find(geoQuery);
   if (!users || users.length === 0) return domain;
-  users = users.map(function(u) {
+  for (var i = 0; i < users.length; i++) {
+    var u = users[i];
     var origin = [user.lat + ',' + user.lng];
     var destination = [u.lat + ',' + u.lng];
     u.distance = yield Distance.matrix(origin, destination);
-    u.lastSeenFromNow = moment(u.lastSeenAt).fromNow();
-    return u;
-  });
+    u.lastSeenFromNow = Moment(u.lastSeenAt).fromNow();
+  }
   var qs = buildUsersQueryString(users);
   var bitlyString = yield Bitly.shortenLink(domain + qs);
   var bitly = JSON.parse(bitlyString);

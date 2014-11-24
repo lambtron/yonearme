@@ -27,10 +27,11 @@ Routes.index = function *index() {
 
 Routes.getYo = function *getYo() {
   var location = this.request.query.location;
+  var lat = location.substring(0, location.indexOf(';'));
+  var lng = location.substring(location.indexOf(';') + 1);
   var user = {
     username: this.request.query.username,
-    lat: location.substring(0, location.indexOf(';')),
-    lng: location.substring(location.indexOf(';') + 1),
+    location: [ parseFloat(lng), parseFloat(lat) ],
     lastSeenAt: new Date
   };
   var link = yield NearMe.get(user);
