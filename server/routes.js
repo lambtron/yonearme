@@ -31,7 +31,7 @@ Routes.getYo = function *getYo() {
     username: this.request.query.username,
     lat: location.substring(0, location.indexOf(';')),
     lng: location.substring(location.indexOf(';') + 1),
-    lastSeenAt: new Date()
+    lastSeenAt: new Date
   };
   var link = yield NearMe.get(user);
   this.body = yield Yo.yo_link(username, link);

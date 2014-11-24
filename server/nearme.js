@@ -27,7 +27,8 @@ NearMe.get = function *get(user) {
   if (!existingUser) {
     yield Users.insert(user);
   } else {
-    searchRadius *= 2;
+    if (moment(existingUser.lastSeenAt).add(1, 'minute').isAfter(moment()))
+      searchRadius *= 2;
     yield Users.update({ username: username }, user);
   }
   var geoQuery = {
