@@ -34,7 +34,7 @@ NearMe.get = function *get(user) {
   }
   var geoQuery = {
     location: {
-      $near: [ parseInt(user.lng), parseInt(user.lat) ],
+      $near: user.location,
       $maxDistance: searchRadius/111.2
     }
   };
@@ -42,9 +42,11 @@ NearMe.get = function *get(user) {
   if (!users || users.length === 0) return domain;
   for (var i = 0; i < users.length; i++) {
     var u = users[i];
-    var origin = [user.lat + ',' + user.lng];
-    var destination = [u.lat + ',' + u.lng];
-    u.distance = yield Distance.matrix(origin, destination);
+    var origin = [user.location[1] + ',' + user.location[0]];
+    var destination = [u.location[1] + ',' + u.location[0]];
+    var distance = yield Distance.matrix(origin, destination);
+    if (distance.status === 'OK')
+      u.distance = distance.rows[0].elements[0].distance.text;
     u.lastSeenFromNow = Moment(u.lastSeenAt).fromNow();
   }
   var qs = buildUsersQueryString(users);

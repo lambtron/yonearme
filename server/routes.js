@@ -26,11 +26,12 @@ Routes.index = function *index() {
  */
 
 Routes.getYo = function *getYo() {
+  var username = this.request.query.username;
   var location = this.request.query.location;
   var lat = location.substring(0, location.indexOf(';'));
   var lng = location.substring(location.indexOf(';') + 1);
   var user = {
-    username: this.request.query.username,
+    username: username,
     location: [ parseFloat(lng), parseFloat(lat) ],
     lastSeenAt: new Date
   };
@@ -71,7 +72,7 @@ function objectToArray(object) {
     var element = array[i];
     if (!element)
       var element = {};
-    element[p] = query[prop];
+    element[p] = object[prop];
     array[i] = element;
   }
   return array;
