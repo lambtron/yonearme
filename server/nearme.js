@@ -24,6 +24,7 @@ var NearMe = {};
 NearMe.get = function *get(user) {
   var existingUser = yield Users.findOne({ username: username });
   var searchRadius = 5; // in km
+  var domain = 'http://yonearme.herokuapp.com/nearme/';
   if (!existingUser) {
     yield Users.insert(user);
   } else {
@@ -38,6 +39,7 @@ NearMe.get = function *get(user) {
     }
   };
   var users = yield Users.find(geoQuery);
+  if (!users || users.length === 0) return domain;
   users = users.map(function(u) {
     var origin = [user.lat + ',' + user.lng];
     var destination = [u.lat + ',' + u.lng];
@@ -45,11 +47,17 @@ NearMe.get = function *get(user) {
     u.lastSeenFromNow = moment(u.lastSeenAt).fromNow();
     return u;
   });
-  var qs = buildQueryString(users);
-  var urlString = yield Bitly.shortenLink('http://yonearme.herokuapp.com/nearme/' + qs);
-  var url = JSON.parse(urlString);
-  return url.data.url;
+  var qs = buildUsersQueryString(users);
+  var bitlyString = yield Bitly.shortenLink(domain + qs);
+  var bitly = JSON.parse(bitlyString);
+  return bitly.data.url;
 };
+
+/**
+ * Expose `NearMe`.
+ */
+
+module.exports = NearMe;
 
 /**
  * Private function to build the query string from users.
@@ -59,7 +67,7 @@ NearMe.get = function *get(user) {
  * @return {String}
  */
 
-function buildQueryString(users) {
+function buildUsersQueryString(users) {
   var qs = '?';
   for (var i = 0; i < users.length; i++) {
     var userString = '';
