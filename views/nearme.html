@@ -2,19 +2,45 @@
 
 {% block content %}
   <style>
-    .grey {
-      color: #A8A8A8;
+    .row {
+      background: #1ABC9C;
+      padding: 12px;
     }
-    .dark-grey {
-      color: #282828;
+    .username {
+      font-weight: 800;
+      font-size: 3em;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .username a {
+      text-decoration: none;
+      color: white;
+    }
+    .details {
+      font-size: 0.8em;
+      font-weight: 100;
+      color: #E8E8E8;
     }
   </style>
   <div>
     {% for user in users %}
-      <a href="https://www.justyo.co/{{ user.username }}">{{ user.username }}</a><br>
-      {{ user.distance }}<br>
-      {{ user.lastSeenFromNow }}<br>
-      <hr>
+      <div class="row">
+        <div class="username">
+          <a href="https://www.justyo.co/{{ user.username }}">{{ user.username }}</a>
+        </div>
+        <div class="details">
+          <span class="pull-left">{{ user.distance }} away</span>
+          <span class="pull-right">last YO'd {{ user.lastSeenFromNow }}</span>
+        </div>
+      </div>
     {% endfor %}
   </div>
+
+  <script>
+    var colors = ['#1ABC9C','#2ECC71','#3498DB','#34495E','#16A085','#F1C40F','#2980B9','#8E44AD'];
+    var rows = document.getElementsByClassName('row');
+    for (var i = 0; i < rows.length; i++) {
+      rows[i].style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    }
+  </script>
 {% endblock %}
