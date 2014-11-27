@@ -7,6 +7,7 @@
       padding: 12px;
     }
     .username {
+      color: white;
       font-weight: 800;
       font-size: 3em;
       margin: 0 auto;
@@ -41,6 +42,21 @@
     var rows = document.getElementsByClassName('row');
     for (var i = 0; i < rows.length; i++) {
       rows[i].style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    }
+    var users = document.getElementsByClassName('username');
+    for (var i = 0; i < users.length; i++) {
+      var user = users[i];
+      user.addEventListener('click', function() {
+        var user = this.cloneNode(true);
+        this.innerHTML = 'SENT @YO!';
+        var el = {
+          user: user,
+          confirmation: this
+        };
+        setTimeout(function() {
+          this.confirmation.innerHTML = this.user.innerHTML;
+        }.bind(el), 1500);
+      }.bind(user));
     }
   </script>
 {% endblock %}
